@@ -2,6 +2,7 @@
 using Reactive.Bindings.Extensions;
 using System.Reactive.Linq;
 using System;
+using System.Threading.Tasks;
 
 namespace Playground.Common
 {
@@ -26,7 +27,17 @@ namespace Playground.Common
                 .ToReadOnlyReactiveProperty();
             Increment.Subscribe(_ => counter.Increment());
             Decrement.Subscribe(_ => counter.Decrement());
-            Reset.Subscribe(_ => { title.Value = $"last value: {CounterValue.Value}"; counter.Reset(); });
+            Reset.Subscribe(async _ =>
+            {
+                // Async Sample
+                var count = await Task.Run(() =>
+                {
+                    Task.Delay(1500).Wait();
+                    return CounterValue.Value;
+                });
+                title.Value = $"last value: {count}";
+                counter.Reset();
+            });
         }
     }
 }

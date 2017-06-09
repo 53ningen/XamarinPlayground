@@ -1,4 +1,6 @@
 ﻿using NUnit.Framework;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Playground.Common.Tests
 {
@@ -47,6 +49,7 @@ namespace Playground.Common.Tests
             Assert.AreEqual("last value: ---", vm.Title.Value);
             Assert.AreEqual("3", vm.CounterValue.Value);
             vm.Reset.Execute();
+            Task.Delay(2000).Wait();
             Assert.AreEqual("last value: 3", vm.Title.Value);
             Assert.AreEqual("0", vm.CounterValue.Value);
         }

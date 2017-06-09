@@ -4,6 +4,7 @@ using Playground.Common;
 using Reactive.Bindings;
 using System.Reactive.Linq;
 using System;
+using System.Reactive.Concurrency;
 
 namespace Playground
 {
@@ -40,7 +41,9 @@ namespace Playground
 
         void Bind()
         {
-            viewModel.Title.Subscribe(x => NavigationItem.Title = x);
+            viewModel.Title
+                     .ObserveOn(UIDispatcherScheduler.Default)
+                     .Subscribe(x => NavigationItem.Title = x);
             counterLabel.SetBinding(x => x.Text, viewModel.CounterValue);
             incrementButton.TouchUpInside += (sender, e) => viewModel.Increment.Execute();
             decrementButton.TouchUpInside += (sender, e) => viewModel.Decrement.Execute();

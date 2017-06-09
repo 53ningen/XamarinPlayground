@@ -1,5 +1,9 @@
 ﻿using UIKit;
 using CoreGraphics;
+using Playground.Common;
+using Reactive.Bindings;
+using System.Reactive.Linq;
+using System;
 
 namespace Playground
 {
@@ -10,12 +14,20 @@ namespace Playground
         readonly UIButton decrementButton = new UIButton();
         readonly UIButton resetButton = new UIButton();
 
+        CounterViewModel viewModel { get; } = new CounterViewModel();
+
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
             EdgesForExtendedLayout = UIRectEdge.None;
             View.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
-            counterLabel.Text = "0";
+            SetAppearance();
+            Bind();
+            View.AddSubviews(new UIView[] { counterLabel, incrementButton, decrementButton, resetButton });
+        }
+
+        void SetAppearance()
+        {
             counterLabel.TextAlignment = UITextAlignment.Center;
             counterLabel.Font = UIFont.BoldSystemFontOfSize(40);
             incrementButton.SetTitle("+", UIControlState.Normal);
@@ -24,7 +36,15 @@ namespace Playground
             decrementButton.BackgroundColor = UIColor.Blue;
             resetButton.SetTitle("0", UIControlState.Normal);
             resetButton.BackgroundColor = UIColor.Gray;
-            View.AddSubviews(new UIView[] { counterLabel, incrementButton, decrementButton, resetButton });
+        }
+
+        void Bind()
+        {
+            viewModel.Title.Subscribe(x => NavigationItem.Title = x);
+            counterLabel.SetBinding(x => x.Text, viewModel.CounterValue);
+            incrementButton.TouchUpInside += (sender, e) => viewModel.Increment.Execute();
+            decrementButton.TouchUpInside += (sender, e) => viewModel.Decrement.Execute();
+            resetButton.TouchUpInside += (sender, e) => viewModel.Reset.Execute();
         }
 
         public override void ViewDidLayoutSubviews()
